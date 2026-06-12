@@ -37,10 +37,8 @@ pub fn perform_primitive_rewrite(
 		None => return r,
 	};
 	let (rewritten_root, rewritten_values) = can_rewrite(rewrite_p2, ps, 0);
-	if !rewritten_root {
-		if let Some(p) = rewritten_values[0].as_primitive() {
-			r.failed_rewrites.push(p.clone());
-		}
+	if !rewritten_root && let Some(p) = rewritten_values[0].as_primitive() {
+		r.failed_rewrites.push(p.clone());
 	}
 	let r_index = if rewritten_root && primitive_is_core(p.id) {
 		p.output
@@ -55,11 +53,11 @@ pub fn perform_primitive_rewrite(
 		r.value = value_nil();
 		return r;
 	}
-	if let Some(idx) = slot_index {
-		if r.rewritten || rewritten_root {
-			ps.values[idx].rewritten = true;
-			ps.values[idx].set_value(rewritten_values[r_index].clone());
-		}
+	if let Some(idx) = slot_index
+		&& (r.rewritten || rewritten_root)
+	{
+		ps.values[idx].rewritten = true;
+		ps.values[idx].set_value(rewritten_values[r_index].clone());
 	}
 	r.rewritten = r.rewritten || rewritten_root;
 	r.value = rewritten_values[r_index].clone();
@@ -162,11 +160,11 @@ pub fn perform_equation_rewrite(
 		}
 	}
 	let value = Value::Equation(Arc::new(rewrite_eq));
-	if let Some(idx) = slot_index {
-		if rewritten {
-			ps.values[idx].rewritten = true;
-			ps.values[idx].set_value(value.clone());
-		}
+	if let Some(idx) = slot_index
+		&& rewritten
+	{
+		ps.values[idx].rewritten = true;
+		ps.values[idx].set_value(value.clone());
 	}
 	RewriteResult {
 		failed_rewrites,

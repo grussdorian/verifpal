@@ -74,7 +74,7 @@ pub fn wasm_verify(input: &str) -> String {
 			return format!(
 				r#"{{"ok":false,"error":"{}","results":[],"code":"","messages":[]}}"#,
 				json_escape(&e.to_string())
-			)
+			);
 		}
 	};
 
@@ -84,7 +84,7 @@ pub fn wasm_verify(input: &str) -> String {
 			return format!(
 				r#"{{"ok":false,"error":"{}","results":[],"code":"","messages":[]}}"#,
 				json_escape(&e.to_string())
-			)
+			);
 		}
 	};
 
@@ -143,7 +143,7 @@ pub fn wasm_pretty(input: &str) -> String {
 			return format!(
 				r#"{{"ok":false,"error":"{}","output":""}}"#,
 				json_escape(&e.to_string())
-			)
+			);
 		}
 	};
 

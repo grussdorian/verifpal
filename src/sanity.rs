@@ -81,10 +81,10 @@ pub fn sanity_assignment_constants(
 		}
 		Value::Equation(e) => {
 			for val in &e.values {
-				if let Value::Constant(c) = val {
-					if !constants.iter().any(|existing| c.equivalent(existing)) {
-						constants.push(c.clone());
-					}
+				if let Value::Constant(c) = val
+					&& !constants.iter().any(|existing| c.equivalent(existing))
+				{
+					constants.push(c.clone());
 				}
 			}
 		}
@@ -255,7 +255,7 @@ fn sanity_queries_check_known(
 					query, m.constants[0]
 				)
 				.into(),
-			))
+			));
 		}
 	};
 	let sender_knows = km.slots[idx].known_by_principal(m.sender);
@@ -264,17 +264,24 @@ fn sanity_queries_check_known(
 	if !sender_knows {
 		return Err(VerifpalError::Sanity(
 			format!(
-			"authentication query ({}) depends on {} sending a constant ({}) that they do not know",
-			query,
-			principal_get_name_from_id(m.sender),
-			c
-		)
+				"authentication query ({}) depends on {} sending a constant ({}) that they do not know",
+				query,
+				principal_get_name_from_id(m.sender),
+				c
+			)
 			.into(),
 		));
 	}
 	if !recipient_knows {
-		return Err(VerifpalError::Sanity(format!("authentication query ({}) depends on {} receiving a constant ({}) that they never receive",
-            query, principal_get_name_from_id(m.recipient), c).into()));
+		return Err(VerifpalError::Sanity(
+			format!(
+				"authentication query ({}) depends on {} receiving a constant ({}) that they never receive",
+				query,
+				principal_get_name_from_id(m.recipient),
+				c
+			)
+			.into(),
+		));
 	}
 	if !used {
 		return Err(VerifpalError::Sanity(format!("authentication query ({}) depends on {} using a constant ({}) in a primitive, but this never happens",

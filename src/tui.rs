@@ -335,33 +335,31 @@ pub fn tui_message(msg: &str, msg_type: InfoLevel) {
 			InfoLevel::Analysis => {
 				if msg.contains("Mutation map for") {
 					// Extract principal name from "Mutation map for Bob at depth..."
-					if let Some(rest) = msg.strip_prefix("Mutation map for ") {
-						if let Some(name) = rest.split_whitespace().next() {
-							st.scan_principal = name.to_string();
-							st.mitm_target = name.to_string();
-							let seed = st.frame as u64 ^ (name.len() as u64 * 31);
-							st.narrative = narrative::narrative_for_mutation(name, seed);
-						}
+					if let Some(rest) = msg.strip_prefix("Mutation map for ")
+						&& let Some(name) = rest.split_whitespace().next()
+					{
+						st.scan_principal = name.to_string();
+						st.mitm_target = name.to_string();
+						let seed = st.frame as u64 ^ (name.len() as u64 * 31);
+						st.narrative = narrative::narrative_for_mutation(name, seed);
 					}
 				} else if msg.contains("Constructed skeleton") {
 					// skeleton info — no separate line needed
-				} else if msg.contains("Initializing depth") {
-					if let Some(rest) = msg.strip_prefix("Initializing depth ") {
-						if let Some(num) = rest.split_whitespace().next() {
-							let depth_str = num.trim_end_matches(',');
-							st.depth = depth_str.to_string();
-							let seed = depth_str.parse::<u64>().unwrap_or(0);
-							st.narrative =
-								narrative::pick_narrative(NarrativeContext::Escalation, seed);
-						}
-					}
+				} else if msg.contains("Initializing depth")
+					&& let Some(rest) = msg.strip_prefix("Initializing depth ")
+					&& let Some(num) = rest.split_whitespace().next()
+				{
+					let depth_str = num.trim_end_matches(',');
+					st.depth = depth_str.to_string();
+					let seed = depth_str.parse::<u64>().unwrap_or(0);
+					st.narrative = narrative::pick_narrative(NarrativeContext::Escalation, seed);
 				}
 			}
 			InfoLevel::Info if msg.starts_with("Running at phase") => {
-				if let Some(rest) = msg.strip_prefix("Running at phase ") {
-					if let Some(num) = rest.strip_suffix('.') {
-						st.phase = num.parse().unwrap_or(0);
-					}
+				if let Some(rest) = msg.strip_prefix("Running at phase ")
+					&& let Some(num) = rest.strip_suffix('.')
+				{
+					st.phase = num.parse().unwrap_or(0);
 				}
 			}
 			_ => {}

@@ -253,10 +253,10 @@ pub fn primitive_extract_bypass_key(prim: &Primitive) -> Option<Value> {
 	match spec.bypass_key {
 		Some(BypassKeyKind::Direct(i)) => Some(prim.arguments[i].clone()),
 		Some(BypassKeyKind::DhExponent(i)) => {
-			if let Value::Equation(e) = &prim.arguments[i] {
-				if e.values.len() >= 2 {
-					return Some(e.values[e.values.len() - 1].clone());
-				}
+			if let Value::Equation(e) = &prim.arguments[i]
+				&& e.values.len() >= 2
+			{
+				return Some(e.values[e.values.len() - 1].clone());
 			}
 			None
 		}

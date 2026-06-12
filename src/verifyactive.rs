@@ -37,8 +37,8 @@
 //! early. The default depth of 3 finds all attacks in published protocols
 //! (TLS 1.3, Signal, Noise, Scuttlebutt, DP-3T, etc.) within seconds.
 
-use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 use crate::context::VerifyContext;
 use crate::deduction::compute_knowledge_closure;
@@ -759,11 +759,11 @@ fn verify_active_mutate_principal_state(
 			if let Some(v) = try_rewrite_primitive(&combo_value, &ps) {
 				combo_value = v;
 			}
-			if let Value::Primitive(orig_p) = &resolved_assigned {
-				if let Some(combo_p) = combo_value.as_primitive_mut() {
-					combo_p.output = orig_p.output;
-					combo_p.instance_check = orig_p.instance_check;
-				}
+			if let Value::Primitive(orig_p) = &resolved_assigned
+				&& let Some(combo_p) = combo_value.as_primitive_mut()
+			{
+				combo_p.output = orig_p.output;
+				combo_p.instance_check = orig_p.instance_check;
 			}
 		}
 
@@ -906,20 +906,20 @@ fn verify_bypass_decompose(ctx: &VerifyContext, km: &ProtocolTrace, ps: &Princip
 		for (wv, _idx) in &wire_prims {
 			if let Value::Primitive(p) = wv {
 				// Active decompose (e.g. AEAD_ENC: knowing the key reveals plaintext)
-				if let Some(result) = can_decompose(p, ps, &attacker_snap, 0) {
-					if ctx.attacker_put(&result.revealed, &record) {
-						info_message(
-							&format!(
-								"{} obtained by decomposing {} with {}.",
-								info_output_text(&result.revealed),
-								wv,
-								pretty_values(&result.used),
-							),
-							InfoLevel::Deduction,
-							true,
-						);
-						found_new = true;
-					}
+				if let Some(result) = can_decompose(p, ps, &attacker_snap, 0)
+					&& ctx.attacker_put(&result.revealed, &record)
+				{
+					info_message(
+						&format!(
+							"{} obtained by decomposing {} with {}.",
+							info_output_text(&result.revealed),
+							wv,
+							pretty_values(&result.used),
+						),
+						InfoLevel::Deduction,
+						true,
+					);
+					found_new = true;
 				}
 				// Passive decompose (e.g. associated data from AEAD_ENC)
 				let passive = passively_decompose(p);
@@ -980,11 +980,11 @@ fn build_bypass_state(
 			if !prim.instance_check || ps.values[idx].provenance.creator != ps.id {
 				continue;
 			}
-			if let Some(key) = extract_bypass_key(prim) {
-				if attacker_can_obtain_value(&key, &ps, attacker) {
-					ps.values[idx].override_all(value_g_nil());
-					needs_final_resolve = true;
-				}
+			if let Some(key) = extract_bypass_key(prim)
+				&& attacker_can_obtain_value(&key, &ps, attacker)
+			{
+				ps.values[idx].override_all(value_g_nil());
+				needs_final_resolve = true;
 			}
 		}
 		if !needs_final_resolve {

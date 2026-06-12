@@ -5,8 +5,8 @@ use crate::primitive::primitive_get_enum;
 use crate::principal::principal_names_map_add;
 use crate::types::*;
 use crate::value::value_names_map_add;
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 /// Global counter for generating unique unnamed constant names during parsing.
 /// Must be process-wide so that unnamed constants never collide across models
@@ -382,7 +382,7 @@ impl<'a> Parser<'a> {
 			_ => {
 				return Err(VerifpalError::Parse(
 					format!("invalid attacker type: {}", attacker_str).into(),
-				))
+				));
 			}
 		};
 		self.consume_trivia_nocapture();
@@ -642,7 +642,7 @@ impl<'a> Parser<'a> {
 			_ => {
 				return Err(VerifpalError::Parse(
 					format!("invalid qualifier: {}", qualifier_str).into(),
-				))
+				));
 			}
 		};
 		self.skip_whitespace();

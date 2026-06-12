@@ -241,7 +241,7 @@ fn construct_trace_render_assignment(
 			None => {
 				return Err(VerifpalError::Sanity(
 					format!("constant does not exist ({})", c).into(),
-				))
+				));
 			}
 		};
 		let knows = trace.slots[idx].known_by_principal(principal.id);
@@ -302,7 +302,7 @@ fn construct_trace_render_leaks(
 			None => {
 				return Err(VerifpalError::Sanity(
 					format!("leaked constant does not exist ({})", c).into(),
-				))
+				));
 			}
 		};
 		let known = trace.slots[idx].known_by_principal(principal.id);
@@ -344,7 +344,7 @@ fn construct_trace_render_message(
 						c
 					)
 					.into(),
-				))
+				));
 			}
 		};
 		let sender_knows = trace.slots[idx].known_by_principal(message.sender);

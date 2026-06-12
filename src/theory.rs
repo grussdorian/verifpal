@@ -317,10 +317,10 @@ pub fn can_rewrite(p: &Primitive, ps: &PrincipalState, depth: usize) -> (bool, V
 			Ok(s) => s,
 			Err(_) => return (false, wrap(pc_ref)),
 		};
-		if prim.has_rule {
-			if let Some(rule) = prim.core_rule {
-				return rule(pc_ref);
-			}
+		if prim.has_rule
+			&& let Some(rule) = prim.core_rule
+		{
+			return rule(pc_ref);
 		}
 		return (!prim.definition_check, wrap(pc_ref));
 	}
@@ -378,11 +378,7 @@ fn can_rewrite_primitive(p: &Primitive, ps: &PrincipalState, depth: usize) -> bo
 				let replacement = match &*item {
 					Value::Primitive(inner_p) => {
 						let (r, v) = can_rewrite(inner_p, ps, depth + 1);
-						if r {
-							v.into_iter().next()
-						} else {
-							None
-						}
+						if r { v.into_iter().next() } else { None }
 					}
 					Value::Equation(inner_e) => {
 						let mut new_values: Option<Vec<Value>> = None;
@@ -439,10 +435,10 @@ pub fn can_rebuild(p: &Primitive) -> Option<Value> {
 			if arg_idx >= p.arguments.len() {
 				continue;
 			}
-			if let Value::Primitive(arg_p) = &p.arguments[arg_idx] {
-				if arg_p.id == prim.rebuild.id {
-					has.push(&p.arguments[arg_idx]);
-				}
+			if let Value::Primitive(arg_p) = &p.arguments[arg_idx]
+				&& arg_p.id == prim.rebuild.id
+			{
+				has.push(&p.arguments[arg_idx]);
 			}
 		}
 		if has.len() < given_set.len() {

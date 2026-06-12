@@ -17,11 +17,7 @@ pub fn mutation_product(sizes: impl Iterator<Item = usize>, cap: usize) -> Optio
 		}
 		product *= m;
 	}
-	if product <= cap {
-		Some(product)
-	} else {
-		None
-	}
+	if product <= cap { Some(product) } else { None }
 }
 
 impl MutationMap {
@@ -165,10 +161,10 @@ fn skip_value(
 	if !ps.meta[idx].phase.contains(&attacker.current_phase) {
 		return true;
 	}
-	if let Value::Constant(c) = v {
-		if !km.constant_used_by(ps.id, c) {
-			return true;
-		}
+	if let Value::Constant(c) = v
+		&& !km.constant_used_by(ps.id, c)
+	{
+		return true;
 	}
 	false
 }
@@ -196,10 +192,10 @@ fn replace_constant(
 	attacker: &AttackerState,
 ) -> Vec<Value> {
 	let mut mutations = vec![];
-	if let Value::Constant(c) = a {
-		if c.is_g_or_nil() {
-			return mutations;
-		}
+	if let Value::Constant(c) = a
+		&& c.is_g_or_nil()
+	{
+		return mutations;
 	}
 	mutations.push(value_nil());
 	for v in attacker.known.iter() {
@@ -265,10 +261,11 @@ fn replace_equation(value: &Value, _depth: usize, attacker: &AttackerState) -> V
 			_ => {}
 		}
 		for v in attacker.known.iter() {
-			if let Value::Equation(ve) = v {
-				if ve.values.len() == e.values.len() && find_equivalent(v, &mutations).is_none() {
-					mutations.push(v.clone());
-				}
+			if let Value::Equation(ve) = v
+				&& ve.values.len() == e.values.len()
+				&& find_equivalent(v, &mutations).is_none()
+			{
+				mutations.push(v.clone());
 			}
 		}
 	}

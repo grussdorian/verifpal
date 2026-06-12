@@ -5,7 +5,7 @@ use std::io::Read;
 
 use clap::{Parser, Subcommand};
 use verifpal::{
-	info_banner, info_message, pretty_print, set_character, set_tui_mode, verify, InfoLevel,
+	InfoLevel, info_banner, info_message, pretty_print, set_character, set_tui_mode, verify,
 };
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -77,11 +77,11 @@ fn main() {
 			result_code,
 			character,
 		} => {
-			if let Some(ref ch) = character {
-				if let Err(e) = set_character(ch) {
-					eprintln!("Error: {}", e);
-					std::process::exit(1);
-				}
+			if let Some(ref ch) = character
+				&& let Err(e) = set_character(ch)
+			{
+				eprintln!("Error: {}", e);
+				std::process::exit(1);
 			}
 			if !result_code {
 				set_tui_mode(true);

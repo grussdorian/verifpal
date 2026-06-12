@@ -264,19 +264,19 @@ fn reconstruct_recursive(
 		Value::Equation(e) => can_reconstruct_equation(e, attacker),
 		_ => return found,
 	};
-	if let Some(used) = result {
-		if ctx.attacker_put(value, record) {
-			info_message(
-				&format!(
-					"{} obtained by reconstructing with {}.",
-					info_output_text(value),
-					pretty_values(&used),
-				),
-				InfoLevel::Deduction,
-				true,
-			);
-			found = true;
-		}
+	if let Some(used) = result
+		&& ctx.attacker_put(value, record)
+	{
+		info_message(
+			&format!(
+				"{} obtained by reconstructing with {}.",
+				info_output_text(value),
+				pretty_values(&used),
+			),
+			InfoLevel::Deduction,
+			true,
+		);
+		found = true;
 	}
 	found
 }
@@ -323,16 +323,14 @@ fn rule_equivalize(
 	// after that point never fires.  Using the attacker's token for such
 	// a leaked constant to re-resolve in the current mutated state would
 	// let them harvest values from a branch the principal never reached.
-	if let Value::Constant(c) = value {
-		if let Some(halted_at) = ps.halted_at {
-			let suppressed = ps.leaks.iter().any(|leak| {
-				leak.constant_id == c.id
-					&& leak.principal_id == ps.id
-					&& leak.declared_at > halted_at
-			});
-			if suppressed {
-				return false;
-			}
+	if let Value::Constant(c) = value
+		&& let Some(halted_at) = ps.halted_at
+	{
+		let suppressed = ps.leaks.iter().any(|leak| {
+			leak.constant_id == c.id && leak.principal_id == ps.id && leak.declared_at > halted_at
+		});
+		if suppressed {
+			return false;
 		}
 	}
 	let resolved = if let Value::Constant(c) = value {

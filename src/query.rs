@@ -270,10 +270,14 @@ fn query_unlinkability(
 		let diffs = compute_slot_diffs(ps, km);
 		let mutated_info = info_query_mutated_values(km, &diffs.diffs, attacker, &resolved, 0);
 		result.resolved = true;
-		result.summary = info_verify_result_summary(&mutated_info, &format!(
-            "{} ({}) cannot be a suitable unlinkability candidate since it does not satisfy freshness.",
-            no_freshness[0], resolved,
-        ), &result.options);
+		result.summary = info_verify_result_summary(
+			&mutated_info,
+			&format!(
+				"{} ({}) cannot be a suitable unlinkability candidate since it does not satisfy freshness.",
+				no_freshness[0], resolved,
+			),
+			&result.options,
+		);
 		result = query_precondition(result, ps);
 		emit_query_result(ctx, &result);
 		return Ok(result);
@@ -305,11 +309,14 @@ fn query_unlinkability(
 			let diffs = compute_slot_diffs(ps, km);
 			let mutated_info = info_query_mutated_values(km, &diffs.diffs, attacker, &empty, 0);
 			result.resolved = true;
-			result.summary = info_verify_result_summary(&mutated_info, &format!(
-                "{} and {} are not unlinkable since they are the output of the same primitive ({}), which can be obtained by Attacker",
-                query.constants[i], query.constants[j],
-                resolved_values[i],
-            ), &result.options);
+			result.summary = info_verify_result_summary(
+				&mutated_info,
+				&format!(
+					"{} and {} are not unlinkable since they are the output of the same primitive ({}), which can be obtained by Attacker",
+					query.constants[i], query.constants[j], resolved_values[i],
+				),
+				&result.options,
+			);
 			result = query_precondition(result, ps);
 			emit_query_result(ctx, &result);
 			return Ok(result);

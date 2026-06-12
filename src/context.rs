@@ -146,10 +146,10 @@ impl VerifyContext {
 			if sm.constant.qualifier != Some(Qualifier::Public) {
 				continue;
 			}
-			if let Ok(earliest) = min_int_in_slice(&sm.phase) {
-				if earliest > phase {
-					continue;
-				}
+			if let Ok(earliest) = min_int_in_slice(&sm.phase)
+				&& earliest > phase
+			{
+				continue;
 			}
 			if !km.constant_used_by_any(&sm.constant) {
 				continue;
@@ -192,16 +192,16 @@ impl VerifyContext {
 	/// Write a resolved result. Returns true if it was newly written.
 	pub fn results_put(&self, result: &VerifyResult) -> bool {
 		let mut state = write_lock(&self.results);
-		if let Some(vr) = state.get_mut(result.query_index) {
-			if !vr.resolved {
-				vr.resolved = result.resolved;
-				vr.summary = result.summary.clone();
-				vr.options = result.options.clone();
-				if result.resolved {
-					self.unresolved.fetch_sub(1, Ordering::SeqCst);
-				}
-				return true;
+		if let Some(vr) = state.get_mut(result.query_index)
+			&& !vr.resolved
+		{
+			vr.resolved = result.resolved;
+			vr.summary = result.summary.clone();
+			vr.options = result.options.clone();
+			if result.resolved {
+				self.unresolved.fetch_sub(1, Ordering::SeqCst);
 			}
+			return true;
 		}
 		false
 	}

@@ -379,20 +379,18 @@ pub fn constant_used_by_principal(
 	c: &Constant,
 ) -> bool {
 	if !trace.used_by.is_empty() {
-		if let Some(principals) = trace.used_by.get(&c.id) {
-			if let Some(&used) = principals.get(&principal_id) {
-				return used;
-			}
+		if let Some(principals) = trace.used_by.get(&c.id)
+			&& let Some(&used) = principals.get(&principal_id)
+		{
+			return used;
 		}
 		let i = trace.index.get(&c.id).copied();
-		if let Some(idx) = i {
-			if let Value::Constant(assigned_c) = &trace.slots[idx].initial_value {
-				if let Some(principals) = trace.used_by.get(&assigned_c.id) {
-					if let Some(&used) = principals.get(&principal_id) {
-						return used;
-					}
-				}
-			}
+		if let Some(idx) = i
+			&& let Value::Constant(assigned_c) = &trace.slots[idx].initial_value
+			&& let Some(principals) = trace.used_by.get(&assigned_c.id)
+			&& let Some(&used) = principals.get(&principal_id)
+		{
+			return used;
 		}
 		return false;
 	}
@@ -408,10 +406,10 @@ pub fn constant_used_by_principal(
 			continue;
 		}
 		let (_, v) = resolve_trace_values(&slot.initial_value, trace);
-		if let Some(idx) = i {
-			if find_equivalent(&trace.slots[idx].initial_value, &v).is_some() {
-				return true;
-			}
+		if let Some(idx) = i
+			&& find_equivalent(&trace.slots[idx].initial_value, &v).is_some()
+		{
+			return true;
 		}
 		let cv = Value::Constant(c.clone());
 		if find_equivalent(&cv, &v).is_some() {
