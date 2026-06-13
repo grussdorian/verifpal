@@ -450,6 +450,13 @@ impl<'a> Parser<'a> {
 		self.consume_trivia();
 		let tail_comments = self.take_leading();
 		self.check_unterminated_block()?;
+		if !self.at_end() {
+			crate::info::info_message(
+				"content after the `queries` block is ignored; place all blocks before `queries`",
+				crate::types::InfoLevel::Warning,
+				false,
+			);
+		}
 		Ok(Model {
 			file_name: String::new(),
 			attacker: attacker_type,
