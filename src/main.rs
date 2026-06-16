@@ -348,14 +348,14 @@ mod unit_tests {
 	}
 
 	// -----------------------------------------------------------------------
-	// 3b. Parser: content after the queries block warns but is non-breaking
+	// 3b. Parser: content after the queries block is a hard error
 	// -----------------------------------------------------------------------
 
 	#[test]
-	fn parse_warns_but_accepts_content_after_queries() {
-		// A phase declared after the queries block is dropped, which silently
-		// disables the forward secrecy analysis. Parsing still succeeds for
-		// backwards compatibility, but the verifier prints a warning.
+	fn parse_rejects_content_after_queries() {
+		// A phase declared after the queries block would silently disable
+		// forward secrecy analysis. The parser now refuses to run when it
+		// finds any content after the `queries` block.
 		let model = concat!(
 			"attacker[active]\n",
 			"principal Alice[ knows private x ]\n",
@@ -365,7 +365,7 @@ mod unit_tests {
 			"phase[1]\n",
 			"principal Alice[ leaks x ]\n",
 		);
-		assert!(verifpal::parser::parse_string("after_queries.vp", model).is_ok());
+		assert!(verifpal::parser::parse_string("after_queries.vp", model).is_err());
 	}
 
 	#[test]
