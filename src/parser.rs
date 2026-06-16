@@ -451,11 +451,10 @@ impl<'a> Parser<'a> {
 		let tail_comments = self.take_leading();
 		self.check_unterminated_block()?;
 		if !self.at_end() {
-			crate::info::info_message(
-				"content after the `queries` block is ignored; place all blocks before `queries`",
-				crate::types::InfoLevel::Warning,
-				false,
-			);
+			return Err(VerifpalError::Parse(
+				"the `queries` block must be at the end of the model; found content after `queries`"
+					.into(),
+			));
 		}
 		Ok(Model {
 			file_name: String::new(),
